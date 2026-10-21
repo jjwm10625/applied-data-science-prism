@@ -1,4 +1,3 @@
-
 # Prism | HiLingual
 
 **Applied Data Science · Fall 2026**
@@ -13,7 +12,7 @@ HiLingual 사용자의 행동 로그를 분석하여 향후 7일간의 활동 �
 
 Amplitude 데이터를 기반으로 사용자별 활동 빈도, 최근 접속 시점, 기능 이용 패턴을 분석하고, 머신러닝을 활용해 이탈 위험도를 산출합니다.
 
-> 이탈 여부는 향후 7일간의 활동 관측 여부를 기반으로 정의한 대리 라벨(Proxy Label)이며, 실제 서비스 탈퇴 여부와는 다릅니다.
+> 이탈 여부는 수집 안정성을 가정한 향후 7일간의 활동 관측 여부를 기반으로 정의한 대리 라벨(Proxy Label)이며, 실제 미접속이나 서비스 탈퇴가 확인됐다는 의미는 아닙니다.
 
 ## 02. Key Features
 
@@ -21,11 +20,10 @@ Amplitude 데이터를 기반으로 사용자별 활동 빈도, 최근 접속 �
 |:---|:---|
 | Data Preprocessing | Amplitude 행동 로그 정제 및 사용자 단위 집계 |
 | Feature Engineering | 7·14·21·28일 관찰 기간별 Feature 생성 |
-| Churn Prediction | 머신러닝 기반 향후 7일 이탈 위험 예측 |
+| Churn Prediction | 머신러닝 기반 향후 7일 활동 미관측 위험 예측 |
 | Model Evaluation | 모델별·관찰 기간별 성능 비교 |
 | Personalization | 사용자별 이용 요일·시간대 및 선호 기능 분석 |
 | Notification | 개인화 알림 문구·발송 시점·이동 화면 결정 |
-| Dashboard | 예측 및 평가 결과 시각화 |
 
 ## 03. Tech Stack
 
@@ -34,17 +32,16 @@ Amplitude 데이터를 기반으로 사용자별 활동 빈도, 최근 접속 �
 | Language | Python, Swift |
 | Data | Amplitude, pandas, NumPy |
 | Machine Learning | scikit-learn, XGBoost, CatBoost |
-| Dashboard | Streamlit |
 | iOS | SwiftUI, UserNotifications, Deep Link |
 | Collaboration | Git, GitHub |
 
-일부 기능과 기술은 구현 및 검증 예정입니다.
+일부 기능과 기술은 구현 및 검증 예정입니다. 실제 데이터 모델 학습·성능 평가와 iOS Dev 앱 연동 검증은 아직 수행하지 않았습니다.
 
 ## 04. Project Structure
 
 ```text
-AppliedDataScience-Prism/
-├── pipeline/             # 데이터 전처리
+applied-data-science-prism/
+├── pipeline/             # 데이터 전처리 및 필수 검증
 ├── src/prism/
 │   ├── load_data.py      # 데이터 로드
 │   ├── split.py          # 데이터 분할
@@ -55,10 +52,7 @@ AppliedDataScience-Prism/
 │   ├── export_ios.py     # iOS 연동 데이터 생성
 │   └── legacy.py         # 기존 전처리 함수 재사용
 ├── configs/              # 실행 설정
-├── dashboard/            # Streamlit 대시보드
 ├── requirements/         # 추가 의존성
-├── tests/                # 테스트
-├── docs/                 # 프로젝트 문서
 ├── data/                 # 원본 데이터 (Git 제외)
 ├── outputs/              # 전처리 결과 (Git 제외)
 ├── models/               # 학습 모델 (Git 제외)
@@ -71,7 +65,7 @@ AppliedDataScience-Prism/
 ### Installation
 
 ```bash
-git clone https://github.com/jjwm10625/applied-data-science-prism.git
+git clone --branch develop https://github.com/jjwm10625/applied-data-science-prism.git
 cd applied-data-science-prism
 
 python3 -m venv .venv
@@ -81,11 +75,10 @@ python -m pip install -r requirements.txt
 python -m pip install -e .
 ```
 
-모델링 및 대시보드 실행에 필요한 추가 의존성은 다음과 같이 설치합니다.
+모델링에 필요한 추가 의존성은 다음과 같이 설치합니다.
 
 ```bash
 python -m pip install -r requirements/modeling.txt
-python -m pip install -r requirements/dashboard.txt
 ```
 
 ### Run
@@ -94,6 +87,9 @@ python -m pip install -r requirements/dashboard.txt
 # 데이터 전처리
 python pipeline/run.py
 
+# 새 실행 결과를 모델링 CSV로 변환
+python pipeline/export_modeling_csv.py outputs/<새_실행_ID>
+
 # 모델 학습
 python -m prism.train --output models/experiment_001
 
@@ -101,21 +97,17 @@ python -m prism.train --output models/experiment_001
 python -m prism.evaluate \
   --predictions models/experiment_001 \
   --output results/evaluation
-
-# 대시보드
-streamlit run dashboard/app.py
 ```
 
-모델 학습 전 시간 분할 설정과 모델링 데이터 준비가 필요합니다.
+데이터는 Git에 포함하지 않습니다. 모델링에는 별도 전달받은 `outputs/final/handoff/`가 필요하며, 전체 전처리 재실행에는 기존 원본·비교 기준·가명 비밀키가 추가로 필요합니다.
+
+학습 전 `configs/split.example.json`에 팀이 합의한 시간 분할 날짜를 설정합니다. 기간별 동일 표본·분할을 사용하고 변환은 학습 데이터에만 fit합니다. 새 출력 폴더를 사용하여 기존 결과를 보존합니다.
 
 ## 06. Documentation
 
 | 문서 | 설명 |
 |:---|:---|
-| [Preprocessing](pipeline/README.md) | 데이터 전처리 |
-| [Data Contracts](docs/data_contracts.md) | 모듈 입출력 형식 |
-| [Validation](docs/VALIDATION.md) | 검증 기록 |
-| [iOS Interface](docs/ios/interface.md) | iOS 연동 |
+| [Preprocessing](pipeline/README.md) | 데이터 전처리 및 데이터 해석·검증 기준 |
 
 ## 07. Team Members
 
