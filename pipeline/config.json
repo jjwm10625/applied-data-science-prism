@@ -1,0 +1,46 @@
+{
+  "clean_input": "data/baseline/processed/events_clean.csv.gz",
+  "daily_input": "data/baseline/daily/user_daily_activity.csv.gz",
+  "policy_report": "data/baseline/daily/daily_aggregation_report.json",
+  "analysis_start": "2025-10-26",
+  "analysis_end_exclusive": "2026-10-08",
+  "reference_start": "2025-11-23",
+  "reference_end_inclusive": "2026-10-08",
+  "reference_interval_days": 7,
+  "windows_days": [
+    7,
+    14,
+    21,
+    28
+  ],
+  "minimum_observed_history_days": 28,
+  "eligibility_recent_active_days": 28,
+  "verified_collection_intervals": [],
+  "suspect_intervals": [
+    [
+      "2025-10-01",
+      "2025-10-26"
+    ],
+    [
+      "2026-10-08",
+      "2026-10-09"
+    ]
+  ],
+  "feature_verified_intervals": {},
+  "late_upload_policy": "retrospective_snapshot",
+  "label_upload_deadline_utc": null,
+  "split_dates": null,
+  "chunk_size": 100000,
+  "personalization_min_active_days": 3,
+  "proxy_label_policy": {
+    "enabled": true,
+    "version": "proxy_observed_activity_v1",
+    "assumed_collection_intervals": [
+      [
+        "2025-10-26",
+        "2026-10-08"
+      ]
+    ],
+    "statement": "과거 데이터에서는 향후 7일간 관측 가능한 앱 활동이 없는 상태를 예측한다. 수집 안정성을 가정한 대리 라벨을 사용하며, 실제 미접속과의 차이를 한계로 보고한다."
+  }
+}

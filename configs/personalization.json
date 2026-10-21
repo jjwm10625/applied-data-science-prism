@@ -1,0 +1,13 @@
+{
+  "window_days": 28,
+  "min_session_days": 3,
+  "min_weekday_days": 3,
+  "min_feature_days": 3,
+  "time_band_hours": 3,
+  "notice": "Session start day/hour inferred from earliest confirmed event per valid session; not an exact app opening time.",
+  "templates": {
+    "diary": {"body": "오늘의 이야기를 영어로 남겨 보세요.", "route": "diary_write"},
+    "vocabulary": {"body": "저장한 단어를 다시 만나 보세요.", "route": "vocabulary_review"},
+    "pronunciation": {"body": "익숙한 표현을 소리로 연습해 보세요.", "route": "pronunciation"}
+  }
+}

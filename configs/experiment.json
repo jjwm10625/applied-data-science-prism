@@ -1,0 +1,8 @@
+{
+  "dataset": "outputs/final/handoff/modeling_dataset.csv",
+  "roles": "outputs/final/handoff/feature_roles.json",
+  "split_config": "configs/split.example.json",
+  "windows": [7, 14, 21, 28],
+  "models": ["logistic_regression", "random_forest", "xgboost", "catboost"],
+  "seeds": [11, 22, 33, 44, 55]
+}

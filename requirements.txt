@@ -1,0 +1,2 @@
+-r pipeline/requirements-tested.txt
+joblib>=1.2,<2
