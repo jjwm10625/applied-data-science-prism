@@ -39,3 +39,4 @@ htmlcov/
 .vscode/
 .idea/
 .streamlit/secrets.toml
+node_modules
