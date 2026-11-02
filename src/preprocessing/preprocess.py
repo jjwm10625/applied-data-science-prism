@@ -6,6 +6,8 @@ from datetime import datetime, date, timezone, timedelta
 
 import pandas as pd
 
+from widget_filter import widget_exclusion_mask
+
 # ============================================================
 # 1. 기본 설정
 # ============================================================
@@ -19,6 +21,19 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # 분석 기간: KST 기준
 START_DATE = date(2025, 10, 8)
 END_DATE = date(2026, 10, 26)
+
+# KST 2026-08-30부터 widget_count 및 위젯 전용 세션의 시작/종료 제외
+WIDGET_EXCLUSION_START = date(2026, 8, 30)
+
+# 이상 데이터로 확인된 amplitude_id는 전체 기간 제외
+EXCLUDED_AMPLITUDE_IDS = {
+    "1580917700694",
+    "1477164074673",
+    "1688838832116",
+    "1644032753256",
+    "1625616709263",
+    "1374897089120",
+}
 
 UTC = timezone.utc
 KST = timezone(timedelta(hours=9))
@@ -102,6 +117,9 @@ for i, filepath in enumerate(files, 1):
             if user_id is None or not event_time:
                 continue
 
+            if str(user_id) in EXCLUDED_AMPLITUDE_IDS:
+                continue
+
             # ------------------------------------------------
             # UTC → KST 변환
             # ------------------------------------------------
@@ -163,26 +181,6 @@ for i, filepath in enumerate(files, 1):
                 "uuid": uuid,
             })
 
-            # ------------------------------------------------
-            # 사용자별 일간 활동 집계
-            # ------------------------------------------------
-
-            key = (user_id, day)
-            row = daily[key]
-
-            # 전체 이벤트 수
-            row["event_count"] += 1
-
-            # 세션 수
-            if session_id is not None and session_id != -1:
-                row["sessions"].add(session_id)
-
-            # 기능별 이벤트 수
-            for feature, event_names in FEATURE_EVENTS.items():
-
-                if event_type in event_names:
-                    row[f"{feature}_count"] += 1
-
     if i % 500 == 0 or i == len(files):
         print(f"처리 완료: {i:,}/{len(files):,}")
 
@@ -194,6 +192,22 @@ if not clean_records:
     raise ValueError("분석 기간에 해당하는 이벤트가 없습니다.")
 
 clean_df = pd.DataFrame(clean_records)
+
+# 모든 관측 날짜의 이벤트로 세션을 판별한 후 날짜 조건을 적용한다.
+excluded = widget_exclusion_mask(clean_df, WIDGET_EXCLUSION_START)
+excluded_widget_counts = clean_df.loc[excluded, "event_type"].value_counts().to_dict()
+clean_df = clean_df.loc[~excluded].copy()
+del clean_records
+
+# 필터링 완료 후 집계하여 세션 수, 활동일, 라벨도 동일 기준을 사용한다.
+for event in clean_df.itertuples(index=False):
+    row = daily[(event.user_id, event.event_date)]
+    row["event_count"] += 1
+    if pd.notna(event.session_id) and event.session_id != -1:
+        row["sessions"].add(event.session_id)
+    for feature, event_names in FEATURE_EVENTS.items():
+        if event.event_type in event_names:
+            row[f"{feature}_count"] += 1
 
 clean_df = clean_df.sort_values(
     ["user_id", "event_time"]
@@ -265,6 +279,9 @@ assert (
 print("\n=== KST 기준 전처리 완료 ===")
 
 print("정제 이벤트:", f"{len(clean_df):,}")
+print("전체 기간 제외 amplitude_id:", sorted(EXCLUDED_AMPLITUDE_IDS))
+print("위젯 이벤트 제외 시작일(KST):", WIDGET_EXCLUSION_START)
+print("제외한 위젯 이벤트:", dict(excluded_widget_counts))
 print("사용자 ID:", f"{clean_df['user_id'].nunique():,}")
 print("일간 활동 데이터:", f"{len(daily_df):,}")
 
