@@ -1,0 +1,107 @@
+{
+  "window_summary": {
+    "7": {
+      "rows": 22445,
+      "only_session": 21847,
+      "with_widget": 574,
+      "with_error": 0,
+      "other_non_session": 24
+    },
+    "14": {
+      "rows": 37843,
+      "only_session": 36796,
+      "with_widget": 1018,
+      "with_error": 0,
+      "other_non_session": 29
+    },
+    "21": {
+      "rows": 50457,
+      "only_session": 48996,
+      "with_widget": 1425,
+      "with_error": 0,
+      "other_non_session": 36
+    },
+    "28": {
+      "rows": 61233,
+      "only_session": 59380,
+      "with_widget": 1811,
+      "with_error": 0,
+      "other_non_session": 42
+    }
+  },
+  "union_activity_changed": {
+    "7": 28145,
+    "14": 51368,
+    "21": 72318,
+    "28": 91846
+  },
+  "recency_changed": 75580,
+  "drop28": 61233,
+  "labels_changed": 10495,
+  "examples": [
+    {
+      "user_id": "1370024317462",
+      "reference_date": "2025-12-17",
+      "active_days_7d": 1,
+      "session_events": 1,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1371644354706",
+      "reference_date": "2026-01-05",
+      "active_days_7d": 1,
+      "session_events": 1,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1375722773112",
+      "reference_date": "2026-05-06",
+      "active_days_7d": 1,
+      "session_events": 2,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1376637249237",
+      "reference_date": "2025-12-27",
+      "active_days_7d": 1,
+      "session_events": 2,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1378767909035",
+      "reference_date": "2025-11-12",
+      "active_days_7d": 2,
+      "session_events": 4,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1380086499115",
+      "reference_date": "2026-04-05",
+      "active_days_7d": 1,
+      "session_events": 2,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1385680706487",
+      "reference_date": "2025-12-11",
+      "active_days_7d": 1,
+      "session_events": 2,
+      "widget_events": 0,
+      "error_events": 0
+    },
+    {
+      "user_id": "1386069802749",
+      "reference_date": "2025-12-03",
+      "active_days_7d": 1,
+      "session_events": 5,
+      "widget_events": 0,
+      "error_events": 0
+    }
+  ]
+}
