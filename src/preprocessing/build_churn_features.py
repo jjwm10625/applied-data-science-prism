@@ -1,6 +1,8 @@
 import pandas as pd
 from pathlib import Path
 
+from behavior_groups import BEHAVIOR_EVENTS, GROUP_COLUMNS, daily_behavior_flags
+
 # ============================================================
 # 1. 기본 설정
 # ============================================================
@@ -43,6 +45,16 @@ daily = pd.read_parquet(INPUT)
 
 daily["date"] = pd.to_datetime(daily["date"]).dt.normalize()
 daily["user_id"] = daily["user_id"].astype(str)
+
+# All daily counts and group flags use the same reviewed behavior events.
+events = pd.read_parquet(DATA_DIR / "clean_events.parquet", columns=["user_id", "event_time", "event_type"])
+events["user_id"] = events["user_id"].astype(str)
+group_daily = daily_behavior_flags(events)
+daily = daily.merge(group_daily, on=["user_id", "date"], how="left", validate="one_to_one")
+assert daily[GROUP_COLUMNS].notna().all().all(), "그룹 활동일 집계 누락"
+daily["behavior_active"] = daily[GROUP_COLUMNS].any(axis=1)
+assert daily["behavior_active"].all(), "비그룹 이벤트만 있는 일간 기록 존재"
+del events, group_daily
 
 # ============================================================
 # 3. 기본 검증
@@ -99,7 +111,7 @@ for i, (user_id, group) in enumerate(
         continue
 
     # 활동이 없는 날짜는 0으로 채움
-    full = group[COUNT_COLS].reindex(
+    full = group[COUNT_COLS + GROUP_COLUMNS + ["behavior_active"]].reindex(
         dates,
         fill_value=0
     )
@@ -126,18 +138,23 @@ for i, (user_id, group) in enumerate(
             )
 
         features[f"active_days_{window}d"] = (
-            past["event_count"]
+            past["behavior_active"]
             .gt(0)
             .rolling(window, min_periods=window)
             .sum()
         )
+
+        for behavior in BEHAVIOR_EVENTS:
+            features[f"{behavior}_days_{window}d"] = (
+                past[f"{behavior}_active"].rolling(window, min_periods=window).sum()
+            )
 
     # --------------------------------------------------------
     # 마지막 활동 이후 경과일
     # --------------------------------------------------------
 
     last_active = pd.Series(
-        dates.where(full["event_count"].gt(0)),
+        dates.where(full["behavior_active"].gt(0)),
         index=dates
     ).ffill().shift(1)
 
@@ -150,7 +167,7 @@ for i, (user_id, group) in enumerate(
     # --------------------------------------------------------
 
     future_7d = sum(
-        full["event_count"].shift(-offset)
+        full["behavior_active"].astype("int8").shift(-offset)
         for offset in range(1, 8)
     )
 

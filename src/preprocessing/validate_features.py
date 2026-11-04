@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 
+from behavior_groups import BEHAVIOR_EVENTS, EVENT_TO_GROUP
+
 # ============================================================
 # 1. 기본 설정
 # ============================================================
@@ -44,6 +46,17 @@ features["reference_date"] = pd.to_datetime(
 
 daily["user_id"] = daily["user_id"].astype(str)
 features["user_id"] = features["user_id"].astype(str)
+
+events = pd.read_parquet(f"{DATA_DIR}/clean_events.parquet", columns=["user_id", "event_time", "event_type"])
+events["event_time"] = pd.to_datetime(events["event_time"])
+assert events.event_type.isin(EVENT_TO_GROUP).all(), "비그룹 이벤트가 활동 데이터에 남음"
+# Independently collect distinct observed dates for each behavior.
+behavior_dates = {
+    group: {str(uid): part["event_time"].dt.normalize().drop_duplicates().sort_values()
+            for uid, part in events.loc[events.event_type.isin(names)].groupby("user_id")}
+    for group, names in BEHAVIOR_EVENTS.items()
+}
+del events
 
 errors = []
 checked = 0
@@ -151,6 +164,13 @@ for row in sample.itertuples(index=False):
                 expected_days,
                 actual_days
             ))
+
+        for behavior in BEHAVIOR_EVENTS:
+            dates_for_user = behavior_dates[behavior].get(row.user_id, pd.Series([], dtype="datetime64[ns]"))
+            expected_group_days = ((dates_for_user >= ref - pd.Timedelta(days=window)) & (dates_for_user < ref)).sum()
+            actual_group_days = getattr(row, f"{behavior}_days_{window}d")
+            if actual_group_days != expected_group_days:
+                errors.append((row.user_id, ref, f"{behavior}_days_{window}d", expected_group_days, actual_group_days))
 
     # --------------------------------------------------------
     # 5-2. 마지막 활동 이후 경과일 검증

@@ -7,6 +7,7 @@ from datetime import datetime, date, timezone, timedelta
 import pandas as pd
 
 from widget_filter import widget_exclusion_mask
+from behavior_groups import EVENT_TO_GROUP
 
 # ============================================================
 # 1. 기본 설정
@@ -197,6 +198,12 @@ clean_df = pd.DataFrame(clean_records)
 excluded = widget_exclusion_mask(clean_df, WIDGET_EXCLUSION_START)
 excluded_widget_counts = clean_df.loc[excluded, "event_type"].value_counts().to_dict()
 clean_df = clean_df.loc[~excluded].copy()
+# Only reviewed behavior events count as activity throughout the pipeline.
+unmapped = ~clean_df["event_type"].isin(EVENT_TO_GROUP)
+excluded_nonbehavior_counts = clean_df.loc[unmapped, "event_type"].value_counts().to_dict()
+clean_df = clean_df.loc[~unmapped].copy()
+if clean_df.empty:
+    raise ValueError("행동 그룹에 해당하는 이벤트가 없습니다.")
 del clean_records
 
 # 필터링 완료 후 집계하여 세션 수, 활동일, 라벨도 동일 기준을 사용한다.
@@ -282,6 +289,7 @@ print("정제 이벤트:", f"{len(clean_df):,}")
 print("전체 기간 제외 amplitude_id:", sorted(EXCLUDED_AMPLITUDE_IDS))
 print("위젯 이벤트 제외 시작일(KST):", WIDGET_EXCLUSION_START)
 print("제외한 위젯 이벤트:", dict(excluded_widget_counts))
+print("활동 판정에서 제외한 비그룹 이벤트:", excluded_nonbehavior_counts)
 print("사용자 ID:", f"{clean_df['user_id'].nunique():,}")
 print("일간 활동 데이터:", f"{len(daily_df):,}")
 
