@@ -1,0 +1,52 @@
+Target: https://github.com/jjwm10625/applied-data-science-prism.git
+Branch: develop
+Base: 79ff39b18364a3f3ea7686cffae89929837829dc
+
+Replace:
+.gitignore
+README.md
+requirements.txt
+
+Delete:
+configs/experiment.json
+configs/personalization.json
+configs/split.example.json
+models/.gitkeep
+package-lock.json
+package.json
+pipeline/README.md
+pipeline/config.json
+pipeline/export_modeling_csv.py
+pipeline/layout.py
+pipeline/model_transform.py
+pipeline/proxy_labels.py
+pipeline/rebuild_features.py
+pipeline/relabel.py
+pipeline/requirements-tested.txt
+pipeline/requirements.txt
+pipeline/run.py
+pipeline/test_pipeline.py
+pipeline/test_proxy_labels.py
+pipeline/validate_outputs.py
+pyproject.toml
+requirements/modeling.txt
+results/.gitkeep
+src/prism/__init__.py
+src/prism/evaluate.py
+src/prism/export_ios.py
+src/prism/legacy.py
+src/prism/load_data.py
+src/prism/personalize.py
+src/prism/predict.py
+src/prism/split.py
+src/prism/train.py
+
+Added:
+preprocess.py
+build_churn_features.py
+validate_features.py
+
+Commit: 4f9548ea8b076478212c72c7a97568daf6a57df1
+Push: successful (develop)
+History: preserved; 9 existing commits scanned; no prohibited data paths or representative key patterns detected.
+Verification: Python syntax and byte identity, exact six-file index, 11 ignore probes. Full data pipeline not executed.
