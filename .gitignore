@@ -1,0 +1,38 @@
+# 원본 및 파생 데이터
+export_data/
+export/
+zips/
+processed/
+/processed_kst/*
+!/processed_kst/.gitkeep
+*.parquet
+*.json.gz
+*.zip
+*.csv
+*.jsonl
+*.ndjson
+# 인증 정보
+.env
+.env.*
+*.pem
+*.key
+credentials*
+.aws/
+# 환경 및 캐시
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# 인증 정보가 포함된 로컬 수집 스크립트
+download_all_amplitude.sh
+
+# 로컬 인증 설정
+.netrc
+.npmrc
+.pypirc
+.ssh/

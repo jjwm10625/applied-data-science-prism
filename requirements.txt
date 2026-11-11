@@ -1,0 +1,4 @@
+# 전처리·Feature 생성 및 Parquet 입출력 의존성
+numpy
+pandas
+pyarrow
