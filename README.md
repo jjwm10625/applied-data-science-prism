@@ -1,33 +1,63 @@
+<p align="center">
+  <img src="assets/images/hilingual-branding.svg" width="100%" alt="하이링구얼 브랜드 배너" />
+</p>
+
+<br>
+
 <div align="center">
 
-# HiLingual · User Behavior Analytics
+# 📊 하이링구얼 Hilingual Data
 
-**사용자 행동 데이터로 이탈 예측과 개인화 알림의 기반을 만듭니다.**
+**사용자의 오늘을 읽고, 내일의 학습을 이어갑니다.**
 
-데이터사이언스응용 프로젝트 · PRISM
+사용자 행동 분석 · 이탈 예측 데이터 · 개인화 알림
 
-`Python` · `pandas` · `Amplitude` · `KST`
+<p>
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/pandas-150458?style=flat-square&amp;logo=pandas&amp;logoColor=white" alt="pandas" />
+  <img src="https://img.shields.io/badge/NumPy-013243?style=flat-square&amp;logo=numpy&amp;logoColor=white" alt="NumPy" />
+  <img src="https://img.shields.io/badge/Amplitude-FF6B3B?style=flat-square" alt="Amplitude" />
+  <img src="https://img.shields.io/badge/Parquet-242424?style=flat-square" alt="Parquet" />
+</p>
 
-[빠른 시작](#빠른-시작) · [데이터](#데이터) · [분석 기준](#분석-기준) · [프로젝트 구조](#프로젝트-구조)
+데이터사이언스응용 프로젝트 · **PRISM**
+
+[🚀 빠른 시작](#quick-start) &nbsp;·&nbsp; [🗂️ 데이터](#data) &nbsp;·&nbsp; [🔎 분석 기준](#criteria) &nbsp;·&nbsp; [📂 프로젝트 구조](#structure)
 
 </div>
 
+<br>
+
 ---
 
-## 프로젝트 소개
+## 📌 프로젝트 소개
 
-HiLingual의 Amplitude 이벤트 로그를 정제하고, 사용자별 행동을 분석용 데이터로 변환하는 프로젝트입니다. 모든 이벤트를 한국 시간(KST)으로 맞춘 뒤, 유입·앱 이용·학습 활동을 집계합니다.
+HiLingual은 영어 일기로 꾸준한 학습 루틴을 만드는 서비스입니다. 이 저장소는 HiLingual의 Amplitude 이벤트 로그를 정제하고, 사용자별 행동을 분석용 데이터로 변환하는 프로젝트입니다. 모든 이벤트를 한국 시간(KST)으로 맞춘 뒤, 유입·앱 이용·학습 활동을 집계합니다.
 
 두 가지 분석을 위한 데이터셋을 생성합니다.
 
 | 분석 목적 | 생성하는 데이터 |
 | :--- | :--- |
-| **사용자 이탈 예측** | 최근 7·14·21·28일의 활동량, 행동 그룹별 활동일, 최근 활동 이후 경과일, 이탈 라벨 |
-| **개인화 알림** | 최근 28일의 기능 선호도, 선호 요일·시간, 요일별 선호 시간 |
+| **📉 사용자 이탈 예측** | 최근 7·14·21·28일의 활동량, 행동 그룹별 활동일, 최근 활동 이후 경과일, 이탈 라벨 |
+| **🔔 개인화 알림** | 최근 28일의 기능 선호도, 선호 요일·시간, 요일별 선호 시간 |
 
 현재 구현 범위는 **데이터 전처리·피처 생성·검증**입니다. 모델 학습과 예측은 후속 단계입니다.
 
-## 빠른 시작
+
+<br>
+
+## 🛠 기술 스택
+
+| 기술 | 역할 |
+| :--- | :--- |
+| **Python** | 전처리 파이프라인과 검증 스크립트 실행 |
+| **pandas · NumPy** | 이벤트 정제, 시계열 집계, 피처 계산 |
+| **PyArrow · Parquet** | 분석용 중간 데이터와 결과 저장 |
+| **Amplitude** | 사용자 행동 이벤트 로그 제공 |
+
+<a id="quick-start"></a>
+
+## 🚀 빠른 시작
 
 **준비 사항:** Python 3.9 이상, Bash, 패키지 설치를 위한 인터넷 연결. macOS·Linux 또는 Windows의 WSL에서 실행할 수 있습니다.
 
@@ -49,7 +79,11 @@ bash run.sh
 
 > 결과는 `processed_kst/`에 저장됩니다. 재실행하면 같은 이름의 결과 파일을 덮어씁니다. 원본 전체를 처리하므로 데이터 규모와 실행 환경에 따라 시간과 메모리가 필요합니다.
 
-## 데이터
+<br>
+
+<a id="data"></a>
+
+## 🗂️ 데이터
 
 ### 입력 데이터
 
@@ -76,7 +110,11 @@ export_data/734177/YYYY-MM/*.json.gz
 
 최종 데이터는 CSV와 Parquet로 저장됩니다. 파생 데이터와 가상환경은 Git 추적 대상에서 제외되어 있으며, 실행 후 로컬에서 확인할 수 있습니다.
 
-## 분석 기준
+<br>
+
+<a id="criteria"></a>
+
+## 🔎 분석 기준
 
 ### 활동의 정의
 
@@ -104,10 +142,15 @@ export_data/734177/YYYY-MM/*.json.gz
 
 학습 활동일은 학습 완료일이 아닌 **관련 행동이 발생한 날**입니다. 화면 조회 이벤트만으로 실제 전경 조회와 자동 화면 전환을 완전히 구분할 수는 없습니다. 활동이 없는 요일의 선호 시간과 사용하지 않은 기능의 선호도는 결측값일 수 있습니다.
 
-## 프로젝트 구조
+<br>
+
+<a id="structure"></a>
+
+## 📂 프로젝트 구조
 
 ```text
 .
+├── assets/images/               # README 브랜딩 이미지
 ├── run.sh                       # 환경 준비부터 생성·검증까지 한 번에 실행
 ├── requirements.txt             # Python 의존성
 ├── export_data/734177/           # 월별 Amplitude 원본
@@ -123,7 +166,9 @@ export_data/734177/YYYY-MM/*.json.gz
 └── docs/                        # 작업 문서
 ```
 
-## 검증과 참고 자료
+<br>
+
+## ✅ 검증과 참고 자료
 
 `run.sh`는 피처 검증과 전체 행의 행동 그룹·활동일·최근 활동 경과일·이탈 라벨 검증을 실행합니다. 생성된 결과만 다시 검증하려면 아래 명령을 사용합니다.
 
